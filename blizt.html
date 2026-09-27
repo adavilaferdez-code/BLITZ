@@ -5,8 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>BLIZT Pro – Preventa & Clientes</title>
+    <title>BLIZT Pro – Preventa & Cartera Clientes</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Local and CDN SheetJS for 100% offline Excel parsing -->
+    <script src="xlsx.full.min.js"></script>
+    <script>
+        if (typeof XLSX === 'undefined') {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"><\/script>');
+        }
+    </script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
@@ -160,9 +167,53 @@
         }
         .tool-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.25); }
 
+        /* MONTHLY EXCEL UPLOAD BANNER */
+        .excel-update-bar {
+            margin: 12px 18px 4px;
+            background: linear-gradient(135deg, rgba(37,99,235,0.15), rgba(16,185,129,0.15));
+            border: 1.5px dashed rgba(59,130,246,0.5);
+            border-radius: var(--radius-lg);
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .excel-update-text h3 {
+            font-size: 0.92rem;
+            font-weight: 900;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .excel-update-text p {
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        .btn-excel-upload {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            color: #fff;
+            padding: 9px 16px;
+            border-radius: var(--radius-md);
+            font-weight: 800;
+            font-size: 0.82rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .btn-excel-upload:hover { filter: brightness(1.15); }
+
         /* EXECUTIVE KPI BAR */
         .kpi-row {
-            padding: 14px 18px 8px;
+            padding: 10px 18px 8px;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 10px;
@@ -332,8 +383,8 @@
             background: #ef4444;
         }
         .client-item.has-saved-phone {
-            border-color: rgba(16, 185, 129, 0.4);
-            background: #101c1c;
+            border-color: rgba(16, 185, 129, 0.45);
+            background: #0d1a18;
         }
         .client-item:hover {
             background: var(--bg-card-hover);
@@ -413,7 +464,8 @@
             background: #10b981;
             color: #000;
             font-weight: 900;
-            font-size: 0.76rem;
+            font-size: 0.78rem;
+            padding: 3px 8px;
             box-shadow: 0 2px 8px rgba(16,185,129,0.4);
         }
         .tag-phone-off { background: rgba(239,68,68,0.12); color: #f87171; }
@@ -591,7 +643,7 @@
         .contact-hub {
             margin: 16px 20px;
             background: var(--bg-card);
-            border: 2px solid rgba(16, 185, 129, 0.35);
+            border: 2px solid rgba(16, 185, 129, 0.4);
             border-radius: var(--radius-lg);
             padding: 16px;
             display: flex;
@@ -907,7 +959,7 @@
 
 <!-- WARNING BANNER IF IN EPHEMERAL PREVIEW -->
 <div id="storageWarningBanner">
-    ⚠️ <b>ATENCIÓN</b>: Estás usando el visor temporal de archivos o WhatsApp.<br>
+    ⚠️ <b>ATENCIÓN</b>: Estás en el visor temporal de WhatsApp o Archivos.<br>
     👉 Toca los <b>3 puntos arriba (o Compartir)</b> y elige <b>"Abrir en Chrome"</b> (o <b>"Abrir en Safari"</b>) para que tus teléfonos se guarden para siempre al salir.
 </div>
 
@@ -931,6 +983,18 @@
             <button class="tool-btn" onclick="openImportModal()" title="Copia de seguridad y exportar">⚙️ Datos</button>
         </div>
     </header>
+
+    <!-- MONTHLY EXCEL UPLOAD BANNER -->
+    <div class="excel-update-bar">
+        <div class="excel-update-text">
+            <h3>📊 Actualización Mensual con Nuevo Excel</h3>
+            <p>Sube el nuevo Excel de Coca-Cola: actualiza rutas y consumos <b>SIN BORRAR tus teléfonos</b>.</p>
+        </div>
+        <input type="file" id="excelMonthlyInput" accept=".xlsx, .xls" style="display:none;" onchange="handleMonthlyExcelFile(this.files[0])">
+        <button class="btn-excel-upload" onclick="document.getElementById('excelMonthlyInput').click()">
+            📁 CARGAR EXCEL DEL MES (.xlsx)
+        </button>
+    </div>
 
     <!-- EXECUTIVE KPI ROW -->
     <div class="kpi-row">
@@ -1171,6 +1235,7 @@ const BLIZT_BASE_CATALOG = [{"id":"c_1013209","code":"1013209","name":"TIENDA EL
 
 // User Edits Storage Key (Stores ONLY phone, email, notes, custom fields - ultra lightweight)
 const USER_EDITS_KEY = 'BLIZT_USER_EDITS';
+const BASE_UPDATES_KEY = 'BLIZT_BASE_UPDATES';
 
 let clients = [];
 let userEdits = {};
@@ -1239,13 +1304,25 @@ function initDatabase() {
     // 3. Save consolidated edits
     saveUserEditsToStorage();
 
-    // 4. Merge base database with user edits
+    // 4. Merge base database with user edits & monthly updates
     rebuildClientList();
     renderStream();
 }
 
 function rebuildClientList() {
-    clients = BLIZT_BASE_CATALOG.map(base => {
+    // Check if there are monthly base updates
+    let baseData = BLIZT_BASE_CATALOG;
+    try {
+        const storedBase = localStorage.getItem(BASE_UPDATES_KEY);
+        if (storedBase) {
+            const parsed = JSON.parse(storedBase);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+                baseData = parsed;
+            }
+        }
+    } catch(e) {}
+
+    clients = baseData.map(base => {
         const cKey = String(base.code).trim().toUpperCase();
         const edit = userEdits[cKey];
         if (edit) {
@@ -1279,6 +1356,191 @@ function saveUserEditsToStorage() {
     } catch(e) {
         console.error('Storage error:', e);
     }
+}
+
+// =========================================================================
+//  MONTHLY EXCEL IMPORTER (SMART MERGE - ZERO DATA LOSS)
+// =========================================================================
+
+function handleMonthlyExcelFile(file) {
+    if (!file) return;
+    if (typeof XLSX === 'undefined') {
+        alert('⚠️ La librería Excel está cargando. Espera 2 segundos y vuelve a probar.');
+        return;
+    }
+
+    showToast('⏳ Leyendo archivo Excel mensual...', 'success');
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = new Uint8Array(e.target.result);
+            const wb = XLSX.read(data, { type: 'array' });
+
+            const pogoSheetName = wb.SheetNames.find(s => s.toLowerCase().includes('pogo') || s.toLowerCase().includes('recomendaciones'));
+            const ruteroSheetName = wb.SheetNames.find(s => s.toLowerCase().includes('rutero'));
+
+            if (!pogoSheetName && !ruteroSheetName) {
+                alert('⚠️ No se encontraron las hojas "Recomendaciones POGO" o "Rutero" en este Excel.');
+                return;
+            }
+
+            let updatedCount = 0;
+            let newCount = 0;
+
+            // 1. PROCESAR HOJA RECOMENDACIONES POGO
+            if (pogoSheetName) {
+                const sheet = wb.Sheets[pogoSheetName];
+                const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                if (rows && rows.length > 1) {
+                    const headers = rows[0].map(h => String(h || '').trim().toLowerCase());
+                    const colCode = headers.findIndex(h => h.includes('solicitante') || h.includes('cliente'));
+                    const colName = headers.findIndex(h => h.includes('cliente') && !h.includes('solicitante')) >= 0 ? 
+                                    headers.findIndex(h => h.includes('cliente') && !h.includes('solicitante')) : 
+                                    headers.findIndex(h => h.includes('nombre'));
+                    const colTrans = headers.findIndex(h => h.includes('transporte') || h.includes('distribuidor'));
+                    const colRuta = headers.findIndex(h => h.includes('ruta dm') || h === 'ruta');
+                    const colPrev = headers.findIndex(h => h.includes('prev'));
+                    const colDia = headers.findIndex(h => h.includes('dia') || h.includes('día'));
+                    const colDir = headers.findIndex(h => h.includes('direcci'));
+                    const colLoc = headers.findIndex(h => h.includes('localidad') || h.includes('ciudad') || h.includes('pueblo'));
+                    const colMed = headers.findIndex(h => h.includes('medalla') && !h.includes('potencial'));
+                    const colMedPot = headers.findIndex(h => h.includes('potencial'));
+                    const colProp = headers.findIndex(h => h.includes('propuesta'));
+                    const colCU26 = headers.findIndex(h => h.includes('2026'));
+                    const colCU25 = headers.findIndex(h => h.includes('2025'));
+                    const colCU24 = headers.findIndex(h => h.includes('2024'));
+                    const colCU23 = headers.findIndex(h => h.includes('2023'));
+                    const colPuntos = headers.findIndex(h => h.includes('puntos'));
+                    const colMeses = headers.findIndex(h => h.includes('meses'));
+
+                    for (let i = 1; i < rows.length; i++) {
+                        const r = rows[i];
+                        if (!r || r.length === 0) continue;
+                        const codeVal = r[colCode >= 0 ? colCode : 2];
+                        const nameVal = r[colName >= 0 ? colName : 3];
+                        if (!codeVal || !nameVal) continue;
+
+                        const code = String(codeVal).split('.')[0].trim().toUpperCase();
+                        let existing = clients.find(c => String(c.code).toUpperCase() === code);
+
+                        const pogoData = {
+                            name: String(nameVal).trim(),
+                            code: code,
+                            distributor: colTrans >= 0 && r[colTrans] ? String(r[colTrans]).trim() : (existing ? existing.distributor : ''),
+                            ruta: colRuta >= 0 && r[colRuta] ? String(r[colRuta]).trim() : (existing ? existing.ruta : 'BDB'),
+                            ruta_prev: colPrev >= 0 && r[colPrev] ? String(r[colPrev]).trim() : (existing ? existing.ruta_prev : ''),
+                            dia_visita: colDia >= 0 && r[colDia] ? formatDiaVisita(r[colDia]) : (existing ? existing.dia_visita : ''),
+                            address: colDir >= 0 && r[colDir] ? String(r[colDir]).trim() : (existing ? existing.address : ''),
+                            city: colLoc >= 0 && r[colLoc] ? String(r[colLoc]).trim() : (existing ? existing.city : ''),
+                            medal: colMed >= 0 && r[colMed] ? String(r[colMed]).trim() : (existing ? existing.medal : ''),
+                            medal_potencial: colMedPot >= 0 && r[colMedPot] ? String(r[colMedPot]).trim() : (existing ? existing.medal_potencial : ''),
+                            propuesta: colProp >= 0 && r[colProp] ? String(r[colProp]).trim() : (existing ? existing.propuesta : ''),
+                            cu2026: colCU26 >= 0 && r[colCU26] !== undefined ? String(r[colCU26]).trim() : (existing ? existing.cu2026 : ''),
+                            cu2025: colCU25 >= 0 && r[colCU25] !== undefined ? String(r[colCU25]).trim() : (existing ? existing.cu2025 : ''),
+                            cu2024: colCU24 >= 0 && r[colCU24] !== undefined ? String(r[colCU24]).trim() : (existing ? existing.cu2024 : ''),
+                            cu2023: colCU23 >= 0 && r[colCU23] !== undefined ? String(r[colCU23]).trim() : (existing ? existing.cu2023 : ''),
+                            puntos_pogo: colPuntos >= 0 && r[colPuntos] !== undefined ? String(r[colPuntos]).trim() : (existing ? existing.puntos_pogo : ''),
+                            meses_sin_compra: colMeses >= 0 && r[colMeses] !== undefined ? String(r[colMeses]).trim() : (existing ? existing.meses_sin_compra : '')
+                        };
+
+                        if (existing) {
+                            Object.assign(existing, pogoData);
+                            // PRESERVE USER PHONE/EMAIL
+                            if (userEdits[code]) {
+                                if (userEdits[code].phone) existing.phone = userEdits[code].phone;
+                                if (userEdits[code].email) existing.email = userEdits[code].email;
+                                if (userEdits[code].notes) existing.notes = userEdits[code].notes;
+                            }
+                            updatedCount++;
+                        } else {
+                            const newCli = {
+                                id: 'c_' + code.toLowerCase(),
+                                ...pogoData,
+                                phone: userEdits[code] ? userEdits[code].phone || '' : '',
+                                email: userEdits[code] ? userEdits[code].email || '' : '',
+                                notes: userEdits[code] ? userEdits[code].notes || '' : '',
+                                en_rutero: false,
+                                status: 'active',
+                                type: 'hosteleria',
+                                createdAt: new Date().toISOString(),
+                                updatedAt: new Date().toISOString()
+                            };
+                            clients.push(newCli);
+                            newCount++;
+                        }
+                    }
+                }
+            }
+
+            // 2. PROCESAR HOJA RUTERO
+            if (ruteroSheetName) {
+                const sheet = wb.Sheets[ruteroSheetName];
+                const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                if (rows && rows.length > 1) {
+                    const headers = rows[0].map(h => String(h || '').trim().toLowerCase());
+                    const colCode = headers.findIndex(h => h.includes('cliente'));
+                    const colFecha = headers.findIndex(h => h.includes('fecha'));
+                    const colFrec = headers.findIndex(h => h.includes('frecuencia') && !h.includes('adh'));
+                    const colSec = headers.findIndex(h => h.includes('secuencia'));
+                    const colSubcanal = headers.findIndex(h => h.includes('subcanal'));
+
+                    for (let i = 1; i < rows.length; i++) {
+                        const r = rows[i];
+                        if (!r || r.length === 0) continue;
+                        const codeVal = r[colCode >= 0 ? colCode : 1];
+                        if (!codeVal) continue;
+                        const code = String(codeVal).split('.')[0].trim().toUpperCase();
+                        let existing = clients.find(c => String(c.code).toUpperCase() === code);
+                        if (existing) {
+                            existing.en_rutero = true;
+                            if (colFecha >= 0 && r[colFecha]) existing.fecha_visita = formatExcelDate(r[colFecha]);
+                            if (colFrec >= 0 && r[colFrec]) existing.frecuencia = String(r[colFrec]).trim();
+                            if (colSec >= 0 && r[colSec]) existing.secuencia = String(r[colSec]).trim();
+                            if (colSubcanal >= 0 && r[colSubcanal]) existing.subcanal = String(r[colSubcanal]).trim();
+                        }
+                    }
+                }
+            }
+
+            // Save updated base to local storage
+            try {
+                localStorage.setItem(BASE_UPDATES_KEY, JSON.stringify(clients));
+            } catch(err) {}
+
+            saveUserEditsToStorage();
+            renderStream();
+
+            const savedPhonesCount = Object.keys(userEdits).filter(k => userEdits[k].phone).length;
+            alert(`🎉 ¡ACTUALIZACIÓN MENSUAL EXITOSA!
+
+` +
+                  `✅ Clientes actualizados: ${updatedCount}
+` +
+                  `🆕 Clientes nuevos añadidos: ${newCount}
+` +
+                  `🔒 Teléfonos y notas personales CONSERVADOS: ${savedPhonesCount} intactos.`);
+            showToast('✅ Base de datos mensual actualizada');
+        } catch(err) {
+            console.error(err);
+            alert('❌ Error al procesar el archivo Excel. Asegúrate de subir el archivo .xlsx original de Coca-Cola.');
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+function formatDiaVisita(v) {
+    const s = String(v).trim();
+    const map = { '1':'Lunes (1)', '2':'Martes (2)', '3':'Miércoles (3)', '4':'Jueves (4)', '5':'Viernes (5)', '6':'Sábado (6)' };
+    return map[s] || s;
+}
+
+function formatExcelDate(v) {
+    if (!v) return '';
+    if (v instanceof Date) {
+        return v.toLocaleDateString('es-ES');
+    }
+    return String(v).split('T')[0];
 }
 
 // ---- KPI UPDATER ----
@@ -1350,7 +1612,7 @@ function renderCardHTML(c) {
         <div class="client-main-col">
             <div class="client-headline">
                 <span class="client-name-text">${esc(c.name)}</span>
-                <span class="client-city-tag">${esc(c.city || 'Extremadura')}</span>
+                <span class="client-city-tag">📍 ${esc(c.city || 'Extremadura')}</span>
             </div>
             <div class="client-chips-row">
                 <span class="tag-pill tag-code">#${esc(c.code)}</span>
