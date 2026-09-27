@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>BLIZT Pro – Cartera de Clientes & Preventa</title>
+    <title>BLIZT Pro – Preventa & Clientes</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -20,20 +20,18 @@
             --primary: #2563eb;
             --primary-glow: rgba(37, 99, 235, 0.35);
             --accent-green: #10b981;
-            --accent-green-bg: rgba(16, 185, 129, 0.12);
+            --accent-green-bg: rgba(16, 185, 129, 0.15);
             --accent-gold: #f59e0b;
             --accent-gold-bg: rgba(245, 158, 11, 0.12);
             --accent-red: #ef4444;
             --accent-red-bg: rgba(239, 68, 68, 0.12);
-            --accent-cyan: #06b6d4;
-            --accent-purple: #8b5cf6;
             --text-main: #f8fafc;
             --text-muted: #8e9bb0;
             --radius-sm: 8px;
             --radius-md: 12px;
             --radius-lg: 16px;
             --radius-pill: 9999px;
-            --font-head: 'Outfit', -apple-system, sans-serif;
+            --font-head: 'Outfit', sans-serif;
             --font-body: 'Outfit', sans-serif;
         }
 
@@ -46,7 +44,6 @@
             overscroll-behavior: none;
         }
 
-        /* Subtle executive background */
         .app-bg {
             position: fixed;
             inset: 0;
@@ -57,7 +54,22 @@
             pointer-events: none;
         }
 
-        /* APP WRAPPER */
+        /* WARNING BANNER FOR WHATSAPP / EPHEMERAL PREVIEW */
+        #storageWarningBanner {
+            display: none;
+            background: linear-gradient(135deg, #b91c1c, #991b1b);
+            color: #fff;
+            padding: 12px 18px;
+            font-size: 0.82rem;
+            font-weight: 800;
+            line-height: 1.4;
+            border-bottom: 2px solid #ef4444;
+            position: sticky;
+            top: 0;
+            z-index: 9999;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
         .app-shell {
             max-width: 1100px;
             margin: 0 auto;
@@ -72,7 +84,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            background: rgba(6, 7, 10, 0.92);
+            background: rgba(6, 7, 10, 0.94);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
@@ -102,7 +114,7 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        .btn-nav-back:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+        .btn-nav-back:hover { background: rgba(255,255,255,0.1); }
         .header-title-box h1 {
             font-size: 1.25rem;
             font-weight: 900;
@@ -279,6 +291,11 @@
             color: #fff;
             box-shadow: 0 4px 14px var(--primary-glow);
         }
+        .filter-tab.highlight-green.active {
+            background: #10b981;
+            border-color: #10b981;
+            box-shadow: 0 4px 14px rgba(16,185,129,0.4);
+        }
 
         /* CLIENT LIST & CARDS */
         .client-stream {
@@ -314,6 +331,10 @@
         .client-item.is-quitar::before {
             background: #ef4444;
         }
+        .client-item.has-saved-phone {
+            border-color: rgba(16, 185, 129, 0.4);
+            background: #101c1c;
+        }
         .client-item:hover {
             background: var(--bg-card-hover);
             border-color: rgba(255,255,255,0.22);
@@ -342,17 +363,23 @@
         }
         .client-headline {
             display: flex;
-            align-items: center;
+            align-items: baseline;
             gap: 8px;
             margin-bottom: 4px;
+            flex-wrap: wrap;
         }
         .client-name-text {
             font-size: 1rem;
             font-weight: 800;
             color: #fff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        }
+        .client-city-tag {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #38bdf8;
+            background: rgba(56, 189, 248, 0.12);
+            padding: 2px 7px;
+            border-radius: var(--radius-sm);
         }
         .client-chips-row {
             display: flex;
@@ -382,7 +409,13 @@
         .tag-oro { background: var(--accent-gold-bg); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
         .tag-plata { background: rgba(148,163,184,0.15); color: #cbd5e1; border: 1px solid rgba(148,163,184,0.3); }
         .tag-bronce { background: rgba(217,119,6,0.15); color: #f97316; border: 1px solid rgba(217,119,6,0.3); }
-        .tag-phone-on { background: rgba(16,185,129,0.2); color: #10b981; font-weight: 800; }
+        .tag-phone-on {
+            background: #10b981;
+            color: #000;
+            font-weight: 900;
+            font-size: 0.76rem;
+            box-shadow: 0 2px 8px rgba(16,185,129,0.4);
+        }
         .tag-phone-off { background: rgba(239,68,68,0.12); color: #f87171; }
 
         .client-detail-subline {
@@ -419,11 +452,12 @@
             border-color: rgba(255,255,255,0.3);
         }
         .action-chip-btn.call-green {
-            background: rgba(16,185,129,0.15);
-            border-color: rgba(16,185,129,0.4);
-            color: #10b981;
+            background: #10b981;
+            border-color: #10b981;
+            color: #000;
+            font-weight: 800;
         }
-        .action-chip-btn.call-green:hover { background: #10b981; color: #fff; }
+        .action-chip-btn.call-green:hover { filter: brightness(1.15); }
 
         /* EMPTY STATE */
         .empty-view {
@@ -459,7 +493,7 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.82);
+            background: rgba(0,0,0,0.85);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             z-index: 500;
@@ -524,6 +558,12 @@
             font-weight: 900;
             color: #fff;
             line-height: 1.2;
+            margin-bottom: 4px;
+        }
+        .dossier-city-big {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #38bdf8;
             margin-bottom: 6px;
         }
         .dossier-tags {
@@ -551,7 +591,7 @@
         .contact-hub {
             margin: 16px 20px;
             background: var(--bg-card);
-            border: 1.5px solid rgba(255,255,255,0.12);
+            border: 2px solid rgba(16, 185, 129, 0.35);
             border-radius: var(--radius-lg);
             padding: 16px;
             display: flex;
@@ -580,8 +620,8 @@
         }
 
         .contact-tile {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
+            background: #091312;
+            border: 1px solid rgba(16,185,129,0.4);
             border-radius: var(--radius-md);
             padding: 12px 14px;
             display: flex;
@@ -591,10 +631,10 @@
             flex-wrap: wrap;
         }
         .contact-value-display {
-            font-size: 1.15rem;
+            font-size: 1.2rem;
             font-weight: 900;
             font-family: monospace;
-            color: #fff;
+            color: #34d399;
             letter-spacing: 0.5px;
         }
         .contact-actions-bar {
@@ -616,7 +656,7 @@
             text-decoration: none;
             transition: all 0.2s;
         }
-        .btn-call-solid { background: #10b981; color: white; }
+        .btn-call-solid { background: #10b981; color: #000; }
         .btn-call-solid:hover { filter: brightness(1.15); }
         .btn-wsp-solid { background: #25d366; color: white; }
         .btn-wsp-solid:hover { filter: brightness(1.15); }
@@ -628,8 +668,8 @@
         .clipboard-smart-btn {
             background: linear-gradient(135deg, #10b981, #059669);
             color: white;
-            padding: 13px 18px;
-            font-size: 0.88rem;
+            padding: 14px 18px;
+            font-size: 0.9rem;
             font-weight: 900;
             border-radius: var(--radius-md);
             border: none;
@@ -657,21 +697,21 @@
             background: #090b10;
             border: 1px solid rgba(255,255,255,0.15);
             border-radius: var(--radius-md);
-            padding: 11px 14px;
-            font-size: 0.9rem;
+            padding: 12px 14px;
+            font-size: 0.95rem;
             color: #fff;
             outline: none;
             font-family: var(--font-body);
         }
         .manual-paste-form input:focus { border-color: var(--border-focus); }
         .manual-paste-form button {
-            background: var(--bg-surface);
-            border: 1px solid rgba(255,255,255,0.2);
+            background: var(--primary);
+            border: none;
             color: #fff;
-            padding: 11px 14px;
+            padding: 12px 18px;
             border-radius: var(--radius-md);
             font-weight: 800;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             cursor: pointer;
             white-space: nowrap;
             font-family: var(--font-body);
@@ -865,6 +905,12 @@
 </head>
 <body>
 
+<!-- WARNING BANNER IF IN EPHEMERAL PREVIEW -->
+<div id="storageWarningBanner">
+    ⚠️ <b>ATENCIÓN</b>: Estás usando el visor temporal de archivos o WhatsApp.<br>
+    👉 Toca los <b>3 puntos arriba (o Compartir)</b> y elige <b>"Abrir en Chrome"</b> (o <b>"Abrir en Safari"</b>) para que tus teléfonos se guarden para siempre al salir.
+</div>
+
 <div class="app-bg"></div>
 
 <div class="app-shell">
@@ -879,8 +925,10 @@
             </div>
         </div>
         <div class="header-tools">
-            <button class="tool-btn" onclick="exportFullCSV()" title="Exportar toda la base a Excel CSV">📤 Exportar</button>
-            <button class="tool-btn" onclick="openImportModal()" title="Copia de seguridad y restauración">⚙️ Datos</button>
+            <button class="tool-btn" onclick="selectTab('con_tel')" title="Ver solo los clientes con teléfono guardado" style="color:#10b981; border-color:rgba(16,185,129,0.3);">
+                📞 Mis Teléfonos (<span id="btnPhonesCount">0</span>)
+            </button>
+            <button class="tool-btn" onclick="openImportModal()" title="Copia de seguridad y exportar">⚙️ Datos</button>
         </div>
     </header>
 
@@ -913,8 +961,8 @@
         </div>
         <div class="filter-scroller">
             <button class="filter-tab active" id="tab_all" onclick="selectTab('all')">Todos (1.104)</button>
+            <button class="filter-tab highlight-green" id="tab_con_tel" onclick="selectTab('con_tel')">📞 Con Teléfono (<span id="tabCountTel">0</span>)</button>
             <button class="filter-tab" id="tab_rutero" onclick="selectTab('rutero')">🚚 Mi Rutero (353)</button>
-            <button class="filter-tab" id="tab_con_tel" onclick="selectTab('con_tel')">📞 Con Teléfono</button>
             <button class="filter-tab" id="tab_sin_tel" onclick="selectTab('sin_tel')">⚠️ Sin Teléfono</button>
             <button class="filter-tab" id="tab_oro" onclick="selectTab('oro')">🥇 Oro</button>
             <button class="filter-tab" id="tab_plata" onclick="selectTab('plata')">🥈 Plata</button>
@@ -955,6 +1003,7 @@
             <div class="dossier-avatar" id="dosAvatar">CL</div>
             <div class="dossier-info">
                 <div class="dossier-title" id="dosName">Nombre del Local</div>
+                <div class="dossier-city-big" id="dosCity">Localidad</div>
                 <div class="dossier-tags" id="dosTags"></div>
             </div>
             <button class="btn-modal-close" onclick="closeDetailModal()">✕</button>
@@ -1090,17 +1139,17 @@
         </div>
         <div class="form-container">
             <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.5;">
-                Tus contactos guardados están protegidos en almacenamiento persistente permanente.
+                Tus contactos se guardan de forma permanente con doble capa de almacenamiento. Puedes descargar una copia en cualquier momento.
             </p>
             <button onclick="downloadContactsBackup()" class="btn-full-edit" style="background:#10b981;">
-                💾 Descargar Copia de Seguridad de Mis Contactos (JSON)
+                💾 Descargar Copia de Seguridad de Teléfonos (JSON)
             </button>
-            <button onclick="exportFullCSV()" class="btn-full-edit" style="background:#2563eb;">
+            <button onclick="exportFullCSV()" class="btn-full-edit" style="background:#2563eb; margin-top:8px;">
                 📤 Exportar Toda la Cartera en Excel (CSV)
             </button>
             <div style="margin-top:14px; padding-top:14px; border-top:1px solid var(--border);">
-                <label style="font-size:0.75rem; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Restaurar contactos desde archivo JSON</label>
-                <textarea id="jsonRestoreBox" rows="4" placeholder="Pega aquí el JSON de copia de seguridad..." style="width:100%; margin-top:6px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:10px; color:#fff; font-family:monospace; font-size:0.8rem;"></textarea>
+                <label style="font-size:0.75rem; font-weight:800; color:var(--text-muted); text-transform:uppercase;">Restaurar contactos desde copia JSON</label>
+                <textarea id="jsonRestoreBox" rows="3" placeholder="Pega aquí el JSON de copia de seguridad..." style="width:100%; margin-top:6px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); padding:10px; color:#fff; font-family:monospace; font-size:0.8rem;"></textarea>
                 <button onclick="restoreContactsFromJSON()" class="btn-full-edit" style="margin-top:8px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);">
                     📥 Restaurar Contactos
                 </button>
@@ -1131,8 +1180,27 @@ let currentTab = 'all';
 let searchQuery = '';
 
 document.addEventListener('DOMContentLoaded', () => {
+    checkStorageHealth();
     initDatabase();
 });
+
+// Check if localStorage works or if in sandboxed WhatsApp preview
+function checkStorageHealth() {
+    let ok = false;
+    try {
+        const k = '__blizt_test_store__';
+        localStorage.setItem(k, '1');
+        ok = localStorage.getItem(k) === '1';
+        localStorage.removeItem(k);
+    } catch(e) {
+        ok = false;
+    }
+
+    const banner = document.getElementById('storageWarningBanner');
+    if (!ok && banner) {
+        banner.style.display = 'block';
+    }
+}
 
 // ---- INITIALIZE & MERGE WITH PERSISTENT USER EDITS ----
 function initDatabase() {
@@ -1224,6 +1292,11 @@ function updateKPIs() {
     document.getElementById('kpiRutero').textContent = rutero.toLocaleString();
     document.getElementById('kpiTel').textContent = phones.toLocaleString();
     document.getElementById('kpiOro').textContent = oro.toLocaleString();
+
+    const btnPhonesCount = document.getElementById('btnPhonesCount');
+    if (btnPhonesCount) btnPhonesCount.textContent = phones;
+    const tabCountTel = document.getElementById('tabCountTel');
+    if (tabCountTel) tabCountTel.textContent = phones;
 }
 
 // ---- RENDER STREAM ----
@@ -1267,6 +1340,8 @@ function renderCardHTML(c) {
     if ((c.propuesta || '').toLowerCase().includes('quitar')) itemExtraClass += ' is-quitar';
 
     const hasPhone = c.phone && c.phone.trim();
+    if (hasPhone) itemExtraClass += ' has-saved-phone';
+
     const cleanDigits = hasPhone ? c.phone.replace(/\D/g, '') : '';
 
     return `
@@ -1275,6 +1350,7 @@ function renderCardHTML(c) {
         <div class="client-main-col">
             <div class="client-headline">
                 <span class="client-name-text">${esc(c.name)}</span>
+                <span class="client-city-tag">${esc(c.city || 'Extremadura')}</span>
             </div>
             <div class="client-chips-row">
                 <span class="tag-pill tag-code">#${esc(c.code)}</span>
@@ -1283,12 +1359,12 @@ function renderCardHTML(c) {
                 ${hasPhone ? `<span class="tag-pill tag-phone-on">📞 ${esc(c.phone)}</span>` : `<span class="tag-pill tag-phone-off">⚠️ Sin Teléfono</span>`}
             </div>
             <div class="client-detail-subline">
-                📍 ${esc(c.city || 'Extremadura')} ${c.ruta_prev ? `· Prev: ${esc(c.ruta_prev)}` : ''} ${c.dia_visita ? `· ${esc(c.dia_visita)}` : ''}
+                📍 ${esc(c.address || c.city || 'Extremadura')} ${c.ruta_prev ? `· Prev: ${esc(c.ruta_prev)}` : ''} ${c.dia_visita ? `· ${esc(c.dia_visita)}` : ''}
             </div>
         </div>
         <div class="client-quick-actions" onclick="event.stopPropagation()">
             ${hasPhone ? `
-                <a href="tel:${esc(c.phone)}" class="action-chip-btn call-green" title="Llamar">📞</a>
+                <a href="tel:${esc(c.phone)}" class="action-chip-btn call-green" title="Llamar directamente">📞</a>
                 <a href="https://wa.me/34${cleanDigits}" target="_blank" class="action-chip-btn" style="color:#25d366;" title="WhatsApp">💬</a>
             ` : `
                 <button class="action-chip-btn" onclick="openClientDetail('${c.id}')" title="Ver Ficha y Añadir Teléfono">➕</button>
@@ -1370,6 +1446,7 @@ function openClientDetail(id) {
     // Avatar & Title
     document.getElementById('dosAvatar').textContent = (c.name || '?').slice(0, 2).toUpperCase();
     document.getElementById('dosName').textContent = c.name || '';
+    document.getElementById('dosCity').textContent = '📍 ' + (c.city || 'Extremadura') + (c.address ? ' · ' + c.address : '');
 
     // Badges Row
     const medalLower = (c.medal || '').toLowerCase();
@@ -1446,7 +1523,7 @@ function renderContactHub(c) {
             <div class="contact-tile" style="margin-top:4px;">
                 <div>
                     <div style="font-size:0.68rem; font-weight:800; color:#38bdf8; margin-bottom:2px;">CORREO GUARDADO:</div>
-                    <div class="contact-value-display" style="font-size:0.95rem;">✉️ ${esc(c.email)}</div>
+                    <div class="contact-value-display" style="font-size:0.95rem; color:#38bdf8;">✉️ ${esc(c.email)}</div>
                 </div>
                 <div class="contact-actions-bar">
                     <a href="mailto:${esc(c.email)}" class="hub-action-btn btn-call-solid" style="background:#2563eb;">✉️ Enviar</a>
@@ -1603,7 +1680,7 @@ function commitPhoneSave(code, phoneVal) {
     renderStream();
     if (c) renderContactHub(c);
 
-    showToast(phoneVal ? `✅ Teléfono GUARDADO PARA SIEMPRE: ${phoneVal}` : '🗑️ Teléfono eliminado', phoneVal ? 'success' : 'error');
+    showToast(phoneVal ? `✅ Teléfono GUARDADO: ${phoneVal}` : '🗑️ Teléfono eliminado', phoneVal ? 'success' : 'error');
 }
 
 async function pasteEmailFromClipboard(code) {
@@ -1658,7 +1735,7 @@ function commitEmailSave(code, emailVal) {
     renderStream();
     if (c) renderContactHub(c);
 
-    showToast(emailVal ? `✅ Email GUARDADO PARA SIEMPRE: ${emailVal}` : '🗑️ Email eliminado', emailVal ? 'success' : 'error');
+    showToast(emailVal ? `✅ Email GUARDADO: ${emailVal}` : '🗑️ Email eliminado', emailVal ? 'success' : 'error');
 }
 
 // =========================================================================
@@ -1738,7 +1815,7 @@ function submitClientForm() {
     rebuildClientList();
     renderStream();
     closeEditModal();
-    showToast('✅ Cliente guardado para siempre', 'success');
+    showToast('✅ Cliente guardado con éxito', 'success');
 }
 
 function deleteCurrentClient() {
