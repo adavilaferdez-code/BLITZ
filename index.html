@@ -81,45 +81,8 @@
 
   document.addEventListener('DOMContentLoaded', sincronizarConSupabase);
 </script>
-<script>
-  const SUPABASE_URL = 'https://cjcjamyqemdafeqpwzwr.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_2Hxx5MY2gAxoB7ONSlx8Tg_x0zG3GRQ';
-  const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
-  // 1. Descarga los teléfonos de Supabase al abrir la página
-  async function cargarDesdeSupabase() {
-    if (!supabaseClient) return;
-    try {
-      const { data, error } = await supabaseClient.from('clientes').select('*');
-      if (!error && data && data.length > 0) {
-        let guardados = JSON.parse(localStorage.getItem('blizt_telefonos') || '{}');
-        data.forEach(row => {
-          const cod = row.codigo || row.id;
-          if (cod && row.telefono) guardados[String(cod)] = String(row.telefono);
-        });
-        localStorage.setItem('blizt_telefonos', JSON.stringify(guardados));
-        if (typeof actualizarContadoresUI === 'function') actualizarContadoresUI();
-        if (typeof renderClientes === 'function') renderClientes();
-      }
-    } catch(e) { console.error('Error cargando:', e); }
-  }
 
-  // 2. Intercepta localStorage.setItem para enviar a Supabase cada vez que guardas un teléfono
-  const originalSetItem = localStorage.setItem;
-  localStorage.setItem = function(key, val) {
-    originalSetItem.apply(this, arguments);
-    if (key === 'blizt_telefonos' && supabaseClient) {
-      try {
-        const obj = JSON.parse(val);
-        Object.keys(obj).forEach(async (codigo) => {
-          await supabaseClient.from('clientes').upsert({ codigo: String(codigo), telefono: String(obj[codigo]) });
-        });
-      } catch(e) { console.error('Error guardando en Supabase:', e); }
-    }
-  };
-
-  document.addEventListener('DOMContentLoaded', cargarDesdeSupabase);
-</script>
 <script>
   // Inicialización de Supabase con tus credenciales
   const SUPABASE_URL = 'https://cjcjamyqemdafeqpwzwr.supabase.co';
@@ -146,60 +109,7 @@
     }
   }
 
-  // Guardar teléfono en Supabase al guardar en local
-  async function guardarTelefonoSupabase(codigo, telefono) {
-    if (!supabase) return;
-    try {
-      await supabase.from('clientes').upsert({ codigo: String(codigo), telefono: String(telefono) });
-    } catch (e) {
-      console.error('Error al guardar en Supabase:', e);
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    sincronizarTelefonosSupabase();
-  });
-</script>
-<script>
-  // Inicialización de Supabase con tus credenciales
-  const SUPABASE_URL = 'https://cjcjamyqemdafeqpwzwr.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_2Hxx5MY2gAxoB7ONSlx8Tg_x0zG3GRQ';
-  const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
-
-  // Carga inicial y escucha en tiempo real de teléfonos
-  async function sincronizarTelefonosSupabase() {
-    if (!supabase) return;
-    try {
-      const { data, error } = await supabase.from('clientes').select('codigo, telefono');
-      if (!error && data && data.length > 0) {
-        let telefonosLocales = JSON.parse(localStorage.getItem('blizt_telefonos') || '{}');
-        data.forEach(item => {
-          if (item.codigo && item.telefono) {
-            telefonosLocales[item.codigo] = item.telefono;
-          }
-        });
-        localStorage.setItem('blizt_telefonos', JSON.stringify(telefonosLocales));
-        if (typeof actualizarContadoresUI === 'function') actualizarContadoresUI();
-      }
-    } catch (e) {
-      console.error('Error al sincronizar con Supabase:', e);
-    }
-  }
-
-  // Guardar teléfono en Supabase al guardar en local
-  async function guardarTelefonoSupabase(codigo, telefono) {
-    if (!supabase) return;
-    try {
-      await supabase.from('clientes').upsert({ codigo: String(codigo), telefono: String(telefono) });
-    } catch (e) {
-      console.error('Error al guardar en Supabase:', e);
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    sincronizarTelefonosSupabase();
-  });
-</script>
+  
     <script>
         if (typeof XLSX === 'undefined') {
             document.write('<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"><\/script>');
