@@ -46,6 +46,42 @@
   document.addEventListener('DOMContentLoaded', sincronizarConSupabase);
 </script>
 <script>
+  window.SUPABASE_URL = 'https://cjcjamyqemdafeqpwzwr.supabase.co';
+  window.SUPABASE_KEY = 'sb_publishable_2Hxx5MY2gAxoB7ONSlx8Tg_x0zG3GRQ';
+  window.supabaseClient = window.supabase ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY) : null;
+
+  async function sincronizarConSupabase() {
+    if (!window.supabaseClient) return;
+    try {
+      const { data, error } = await window.supabaseClient.from('clientes').select('id, telefono');
+      if (!error && data && data.length > 0) {
+        let locales = JSON.parse(localStorage.getItem('blizt_telefonos') || '{}');
+        data.forEach(item => {
+          if (item.id && item.telefono) locales[String(item.id)] = String(item.telefono);
+        });
+        localStorage.setItem('blizt_telefonos', JSON.stringify(locales));
+        if (typeof actualizarContadoresUI === 'function') actualizarContadoresUI();
+        if (typeof renderClientes === 'function') renderClientes();
+      }
+    } catch(e) { console.error('Error cargando de Supabase:', e); }
+  }
+
+  const origSetItem = localStorage.setItem;
+  localStorage.setItem = function(key, val) {
+    origSetItem.apply(this, arguments);
+    if (key === 'blizt_telefonos' && window.supabaseClient) {
+      try {
+        const obj = JSON.parse(val);
+        Object.keys(obj).forEach(async (id) => {
+          await window.supabaseClient.from('clientes').upsert({ id: String(id), telefono: String(obj[id]) });
+        });
+      } catch(e) { console.error('Error guardando en Supabase:', e); }
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', sincronizarConSupabase);
+</script>
+<script>
   const SUPABASE_URL = 'https://cjcjamyqemdafeqpwzwr.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_2Hxx5MY2gAxoB7ONSlx8Tg_x0zG3GRQ';
   const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
