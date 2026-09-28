@@ -8,50 +8,42 @@
     <title>BLIZT Pro – Preventa & Cartera Clientes</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     <!-- Local and CDN SheetJS for 100% offline Excel parsing -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const SUPABASE_URL = 'https://cjcjamyqemdafeqpwzwr.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_2Hxx5MY2gAxoB7ONSlx8Tg_x0zG3GRQ';
-  const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+  window.SUPABASE_URL = 'https://cjcjamyqemdafeqpwzwr.supabase.co';
+  window.SUPABASE_KEY = 'sb_publishable_2Hxx5MY2gAxoB7ONSlx8Tg_x0zG3GRQ';
+  window.supabaseClient = window.supabase ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY) : null;
 
-  // 1. Descarga los teléfonos de Supabase al abrir la página
-  async function cargarDesdeSupabase() {
-    if (!supabaseClient) return;
+  async function sincronizarConSupabase() {
+    if (!window.supabaseClient) return;
     try {
-      const { data, error } = await supabaseClient.from('clientes').select('id, telefono');
+      const { data, error } = await window.supabaseClient.from('clientes').select('id, telefono');
       if (!error && data && data.length > 0) {
-        let guardados = JSON.parse(localStorage.getItem('blizt_telefonos') || '{}');
-        data.forEach(row => {
-          if (row.id && row.telefono) {
-            guardados[String(row.id)] = String(row.telefono);
-          }
+        let locales = JSON.parse(localStorage.getItem('blizt_telefonos') || '{}');
+        data.forEach(item => {
+          if (item.id && item.telefono) locales[String(item.id)] = String(item.telefono);
         });
-        localStorage.setItem('blizt_telefonos', JSON.stringify(guardados));
+        localStorage.setItem('blizt_telefonos', JSON.stringify(locales));
         if (typeof actualizarContadoresUI === 'function') actualizarContadoresUI();
         if (typeof renderClientes === 'function') renderClientes();
-        if (typeof cargarDatos === 'function') cargarDatos();
       }
-    } catch(e) { console.error('Error cargando Supabase:', e); }
+    } catch(e) { console.error('Error cargando de Supabase:', e); }
   }
 
-  // 2. Intercepta cuando guardas un teléfono para mandarlo directo a Supabase
-  const originalSetItem = localStorage.setItem;
+  const origSetItem = localStorage.setItem;
   localStorage.setItem = function(key, val) {
-    originalSetItem.apply(this, arguments);
-    if (key === 'blizt_telefonos' && supabaseClient) {
+    origSetItem.apply(this, arguments);
+    if (key === 'blizt_telefonos' && window.supabaseClient) {
       try {
         const obj = JSON.parse(val);
-        Object.keys(obj).forEach(async (clienteId) => {
-          await supabaseClient.from('clientes').upsert({ 
-            id: String(clienteId), 
-            telefono: String(obj[clienteId]) 
-          });
+        Object.keys(obj).forEach(async (id) => {
+          await window.supabaseClient.from('clientes').upsert({ id: String(id), telefono: String(obj[id]) });
         });
-      } catch(e) { console.error('Error enviando a Supabase:', e); }
+      } catch(e) { console.error('Error guardando en Supabase:', e); }
     }
   };
 
-  document.addEventListener('DOMContentLoaded', cargarDesdeSupabase);
+  document.addEventListener('DOMContentLoaded', sincronizarConSupabase);
 </script>
 <script>
   const SUPABASE_URL = 'https://cjcjamyqemdafeqpwzwr.supabase.co';
