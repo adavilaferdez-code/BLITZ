@@ -8,34 +8,46 @@
     <title>BLIZT Pro - Preventa & Cartera Clientes</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
       (function() {
         const sUrl = 'https://cjcjamyqemdafeqpwzwr.supabase.co';
         const sKey = 'sb_publishable_2Hxx5MY2gAxoB7ONSlx8Tg_x0zG3GRQ';
         window.sb = (window.supabase && window.supabase.createClient) ? window.supabase.createClient(sUrl, sKey) : null;
 
-        // 1. Descargar teléfonos desde Supabase a la app
+        // 1. Cargar desde Supabase y fusionar con BLIZT_USER_EDITS sin sobreescribir a cero
         async function sincronizarSupabase() {
           if (!window.sb) return;
           try {
             const { data, error } = await window.sb.from('clientes').select('id, telefono');
             if (!error && data && data.length > 0) {
-              let edits = JSON.parse(localStorage.getItem('BLIZT_USER_EDITS') || '{}');
+              let edits = {};
+              try {
+                edits = JSON.parse(localStorage.getItem('BLIZT_USER_EDITS') || '{}');
+              } catch(err) { edits = {}; }
+
               data.forEach(item => {
                 if (item.id && item.telefono) {
-                  if (!edits[String(item.id)]) edits[String(item.id)] = {};
-                  edits[String(item.id)].phone = String(item.telefono);
+                  const idStr = String(item.id);
+                  if (!edits[idStr]) edits[idStr] = {};
+                  edits[idStr].phone = String(item.telefono);
+                  if (!edits[idStr].updatedAt) edits[idStr].updatedAt = new Date().toISOString();
                 }
               });
+
               localStorage.setItem('BLIZT_USER_EDITS', JSON.stringify(edits));
+
+              // Refrescar la pantalla si la app tiene funciones de render
               if (typeof renderClientes === 'function') renderClientes();
               if (typeof actualizarContadoresUI === 'function') actualizarContadoresUI();
+              if (typeof cargarDatosIniciales === 'function') cargarDatosIniciales();
+              if (typeof initApp === 'function') initApp();
             }
-          } catch(e) { console.error('Error cargando Supabase:', e); }
+          } catch(e) { 
+            console.error('Error cargando Supabase:', e); 
+          }
         }
 
-        // 2. Subir a Supabase cuando se guarde en la app
+        // 2. Interceptar cuando guardas un teléfono para mandarlo a Supabase
         const _set = localStorage.setItem;
         localStorage.setItem = function(k, v) {
           _set.apply(this, arguments);
@@ -52,7 +64,9 @@
           }
         };
 
+        // Ejecutar al inicio y también tras un pequeño retraso para asegurar que la app no lo pise
         document.addEventListener('DOMContentLoaded', sincronizarSupabase);
+        window.addEventListener('load', () => setTimeout(sincronizarSupabase, 800));
       })();
     </script>
     <style>
