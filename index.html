@@ -18,6 +18,50 @@
   async function cargarDesdeSupabase() {
     if (!supabaseClient) return;
     try {
+      const { data, error } = await supabaseClient.from('clientes').select('id, telefono');
+      if (!error && data && data.length > 0) {
+        let guardados = JSON.parse(localStorage.getItem('blizt_telefonos') || '{}');
+        data.forEach(row => {
+          if (row.id && row.telefono) {
+            guardados[String(row.id)] = String(row.telefono);
+          }
+        });
+        localStorage.setItem('blizt_telefonos', JSON.stringify(guardados));
+        if (typeof actualizarContadoresUI === 'function') actualizarContadoresUI();
+        if (typeof renderClientes === 'function') renderClientes();
+        if (typeof cargarDatos === 'function') cargarDatos();
+      }
+    } catch(e) { console.error('Error cargando Supabase:', e); }
+  }
+
+  // 2. Intercepta cuando guardas un teléfono para mandarlo directo a Supabase
+  const originalSetItem = localStorage.setItem;
+  localStorage.setItem = function(key, val) {
+    originalSetItem.apply(this, arguments);
+    if (key === 'blizt_telefonos' && supabaseClient) {
+      try {
+        const obj = JSON.parse(val);
+        Object.keys(obj).forEach(async (clienteId) => {
+          await supabaseClient.from('clientes').upsert({ 
+            id: String(clienteId), 
+            telefono: String(obj[clienteId]) 
+          });
+        });
+      } catch(e) { console.error('Error enviando a Supabase:', e); }
+    }
+  };
+
+  document.addEventListener('DOMContentLoaded', cargarDesdeSupabase);
+</script>
+<script>
+  const SUPABASE_URL = 'https://cjcjamyqemdafeqpwzwr.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_2Hxx5MY2gAxoB7ONSlx8Tg_x0zG3GRQ';
+  const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
+  // 1. Descarga los teléfonos de Supabase al abrir la página
+  async function cargarDesdeSupabase() {
+    if (!supabaseClient) return;
+    try {
       const { data, error } = await supabaseClient.from('clientes').select('*');
       if (!error && data && data.length > 0) {
         let guardados = JSON.parse(localStorage.getItem('blizt_telefonos') || '{}');
