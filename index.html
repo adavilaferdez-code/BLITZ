@@ -5,111 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>BLIZT Pro – Preventa & Cartera Clientes</title>
+    <title>BLIZT Pro - Preventa & Cartera Clientes</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <!-- Local and CDN SheetJS for 100% offline Excel parsing -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  window.SUPABASE_URL = 'https://cjcjamyqemdafeqpwzwr.supabase.co';
-  window.SUPABASE_KEY = 'sb_publishable_2Hxx5MY2gAxoB7ONSlx8Tg_x0zG3GRQ';
-  window.supabaseClient = window.supabase ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY) : null;
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      (function() {
+        const sUrl = 'https://cjcjamyqemdafeqpwzwr.supabase.co';
+        const sKey = 'sb_publishable_2Hxx5MY2gAxoB7ONSlx8Tg_x0zG3GRQ';
+        const sb = window.supabase ? window.supabase.createClient(sUrl, sKey) : null;
 
-  async function sincronizarConSupabase() {
-    if (!window.supabaseClient) return;
-    try {
-      const { data, error } = await window.supabaseClient.from('clientes').select('id, telefono');
-      if (!error && data && data.length > 0) {
-        let locales = JSON.parse(localStorage.getItem('blizt_telefonos') || '{}');
-        data.forEach(item => {
-          if (item.id && item.telefono) locales[String(item.id)] = String(item.telefono);
-        });
-        localStorage.setItem('blizt_telefonos', JSON.stringify(locales));
-        if (typeof actualizarContadoresUI === 'function') actualizarContadoresUI();
-        if (typeof renderClientes === 'function') renderClientes();
-      }
-    } catch(e) { console.error('Error cargando de Supabase:', e); }
-  }
+        async function sincronizarSupabase() {
+          if (!sb) return;
+          try {
+            const { data, error } = await sb.from('clientes').select('id, telefono');
+            if (!error && data && data.length > 0) {
+              let t = JSON.parse(localStorage.getItem('blizt_telefonos') || '{}');
+              data.forEach(item => {
+                if (item.id && item.telefono) t[String(item.id)] = String(item.telefono);
+              });
+              localStorage.setItem('blizt_telefonos', JSON.stringify(t));
+              if (typeof actualizarContadoresUI === 'function') actualizarContadoresUI();
+              if (typeof renderClientes === 'function') renderClientes();
+            }
+          } catch(e) { console.error('Error cargando Supabase:', e); }
+        }
 
-  const origSetItem = localStorage.setItem;
-  localStorage.setItem = function(key, val) {
-    origSetItem.apply(this, arguments);
-    if (key === 'blizt_telefonos' && window.supabaseClient) {
-      try {
-        const obj = JSON.parse(val);
-        Object.keys(obj).forEach(async (id) => {
-          await window.supabaseClient.from('clientes').upsert({ id: String(id), telefono: String(obj[id]) });
-        });
-      } catch(e) { console.error('Error guardando en Supabase:', e); }
-    }
-  };
-
-  document.addEventListener('DOMContentLoaded', sincronizarConSupabase);
-</script>
-<script>
-  window.SUPABASE_URL = 'https://cjcjamyqemdafeqpwzwr.supabase.co';
-  window.SUPABASE_KEY = 'sb_publishable_2Hxx5MY2gAxoB7ONSlx8Tg_x0zG3GRQ';
-  window.supabaseClient = window.supabase ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY) : null;
-
-  async function sincronizarConSupabase() {
-    if (!window.supabaseClient) return;
-    try {
-      const { data, error } = await window.supabaseClient.from('clientes').select('id, telefono');
-      if (!error && data && data.length > 0) {
-        let locales = JSON.parse(localStorage.getItem('blizt_telefonos') || '{}');
-        data.forEach(item => {
-          if (item.id && item.telefono) locales[String(item.id)] = String(item.telefono);
-        });
-        localStorage.setItem('blizt_telefonos', JSON.stringify(locales));
-        if (typeof actualizarContadoresUI === 'function') actualizarContadoresUI();
-        if (typeof renderClientes === 'function') renderClientes();
-      }
-    } catch(e) { console.error('Error cargando de Supabase:', e); }
-  }
-
-  const origSetItem = localStorage.setItem;
-  localStorage.setItem = function(key, val) {
-    origSetItem.apply(this, arguments);
-    if (key === 'blizt_telefonos' && window.supabaseClient) {
-      try {
-        const obj = JSON.parse(val);
-        Object.keys(obj).forEach(async (id) => {
-          await window.supabaseClient.from('clientes').upsert({ id: String(id), telefono: String(obj[id]) });
-        });
-      } catch(e) { console.error('Error guardando en Supabase:', e); }
-    }
-  };
-
-  document.addEventListener('DOMContentLoaded', sincronizarConSupabase);
-</script>
-
-
-<script>
-  // Inicialización de Supabase con tus credenciales
-  const SUPABASE_URL = 'https://cjcjamyqemdafeqpwzwr.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_2Hxx5MY2gAxoB7ONSlx8Tg_x0zG3GRQ';
-  const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
-
-  // Carga inicial y escucha en tiempo real de teléfonos
-  async function sincronizarTelefonosSupabase() {
-    if (!supabase) return;
-    try {
-      const { data, error } = await supabase.from('clientes').select('codigo, telefono');
-      if (!error && data && data.length > 0) {
-        let telefonosLocales = JSON.parse(localStorage.getItem('blizt_telefonos') || '{}');
-        data.forEach(item => {
-          if (item.codigo && item.telefono) {
-            telefonosLocales[item.codigo] = item.telefono;
+        const _set = localStorage.setItem;
+        localStorage.setItem = function(k, v) {
+          _set.apply(this, arguments);
+          if (k === 'blizt_telefonos' && sb) {
+            try {
+              const obj = JSON.parse(v);
+              Object.keys(obj).forEach(async (id) => {
+                await sb.from('clientes').upsert({ id: String(id), telefono: String(obj[id]) });
+              });
+            } catch(e) { console.error('Error guardando Supabase:', e); }
           }
-        });
-        localStorage.setItem('blizt_telefonos', JSON.stringify(telefonosLocales));
-        if (typeof actualizarContadoresUI === 'function') actualizarContadoresUI();
-      }
-    } catch (e) {
-      console.error('Error al sincronizar con Supabase:', e);
-    }
-  }
+        };
 
-  
+        document.addEventListener('DOMContentLoaded', sincronizarSupabase);
+      })();
+    </script>
     <script>
         if (typeof XLSX === 'undefined') {
             document.write('<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"><\/script>');
