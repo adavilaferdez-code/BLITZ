@@ -14,6 +14,52 @@
         const sKey = 'sb_publishable_2Hxx5MY2gAxoB7ONSlx8Tg_x0zG3GRQ';
         const sb = window.supabase ? window.supabase.createClient(sUrl, sKey) : null;
 
+        // 1. Cargar desde Supabase y meterlo en BLIZT_USER_EDITS
+        async function sincronizarSupabase() {
+          if (!sb) return;
+          try {
+            const { data, error } = await sb.from('clientes').select('id, telefono');
+            if (!error && data && data.length > 0) {
+              let edits = JSON.parse(localStorage.getItem('BLIZT_USER_EDITS') || '{}');
+              data.forEach(item => {
+                if (item.id && item.telefono) {
+                  if (!edits[String(item.id)]) edits[String(item.id)] = {};
+                  edits[String(item.id)].phone = String(item.telefono);
+                }
+              });
+              localStorage.setItem('BLIZT_USER_EDITS', JSON.stringify(edits));
+              if (typeof renderClientes === 'function') renderClientes();
+              if (typeof actualizarContadoresUI === 'function') actualizarContadoresUI();
+            }
+          } catch(e) { console.error('Error cargando Supabase:', e); }
+        }
+
+        // 2. Interceptar cuando BLIZT guarda en BLIZT_USER_EDITS y mandarlo a Supabase
+        const _set = localStorage.setItem;
+        localStorage.setItem = function(k, v) {
+          _set.apply(this, arguments);
+          if (k === 'BLIZT_USER_EDITS' && sb) {
+            try {
+              const obj = JSON.parse(v);
+              Object.keys(obj).forEach(async (id) => {
+                const tel = obj[id] && obj[id].phone ? String(obj[id].phone) : null;
+                if (tel) {
+                  await sb.from('clientes').upsert({ id: String(id), telefono: tel });
+                }
+              });
+            } catch(e) { console.error('Error guardando en Supabase:', e); }
+          }
+        };
+
+        document.addEventListener('DOMContentLoaded', sincronizarSupabase);
+      })();
+    
+    <script>
+      (function() {
+        const sUrl = 'https://cjcjamyqemdafeqpwzwr.supabase.co';
+        const sKey = 'sb_publishable_2Hxx5MY2gAxoB7ONSlx8Tg_x0zG3GRQ';
+        const sb = window.supabase ? window.supabase.createClient(sUrl, sKey) : null;
+
         async function sincronizarSupabase() {
           if (!sb) return;
           try {
