@@ -8,17 +8,18 @@
     <title>BLIZT Pro - Preventa & Cartera Clientes</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
       (function() {
         const sUrl = 'https://cjcjamyqemdafeqpwzwr.supabase.co';
         const sKey = 'sb_publishable_2Hxx5MY2gAxoB7ONSlx8Tg_x0zG3GRQ';
-        const sb = window.supabase ? window.supabase.createClient(sUrl, sKey) : null;
+        window.sb = (window.supabase && window.supabase.createClient) ? window.supabase.createClient(sUrl, sKey) : null;
 
-        // 1. Cargar desde Supabase y meterlo en BLIZT_USER_EDITS
+        // 1. Descargar teléfonos desde Supabase a la app
         async function sincronizarSupabase() {
-          if (!sb) return;
+          if (!window.sb) return;
           try {
-            const { data, error } = await sb.from('clientes').select('id, telefono');
+            const { data, error } = await window.sb.from('clientes').select('id, telefono');
             if (!error && data && data.length > 0) {
               let edits = JSON.parse(localStorage.getItem('BLIZT_USER_EDITS') || '{}');
               data.forEach(item => {
@@ -34,17 +35,17 @@
           } catch(e) { console.error('Error cargando Supabase:', e); }
         }
 
-        // 2. Interceptar cuando BLIZT guarda en BLIZT_USER_EDITS y mandarlo a Supabase
+        // 2. Subir a Supabase cuando se guarde en la app
         const _set = localStorage.setItem;
         localStorage.setItem = function(k, v) {
           _set.apply(this, arguments);
-          if (k === 'BLIZT_USER_EDITS' && sb) {
+          if (k === 'BLIZT_USER_EDITS' && window.sb) {
             try {
               const obj = JSON.parse(v);
               Object.keys(obj).forEach(async (id) => {
                 const tel = obj[id] && obj[id].phone ? String(obj[id].phone) : null;
                 if (tel) {
-                  await sb.from('clientes').upsert({ id: String(id), telefono: tel });
+                  await window.sb.from('clientes').upsert({ id: String(id), telefono: tel });
                 }
               });
             } catch(e) { console.error('Error guardando en Supabase:', e); }
@@ -53,7 +54,7 @@
 
         document.addEventListener('DOMContentLoaded', sincronizarSupabase);
       })();
-    
+    </script>
     <script>
       (function() {
         const sUrl = 'https://cjcjamyqemdafeqpwzwr.supabase.co';
