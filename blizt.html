@@ -192,6 +192,18 @@
             border-color: rgba(255, 255, 255, 0.2);
             transform: translateY(-1px);
         }
+        .hdr-icon-btn.sync-btn {
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.25), rgba(14, 165, 233, 0.3));
+            border-color: rgba(56, 189, 248, 0.5);
+            color: #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.15);
+        }
+        .hdr-icon-btn.sync-btn:hover {
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.4), rgba(14, 165, 233, 0.5));
+            border-color: #38bdf8;
+            color: #ffffff;
+            box-shadow: 0 0 14px rgba(56, 189, 248, 0.3);
+        }
         .hdr-icon-btn.excel-btn {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.25));
             border-color: rgba(16, 185, 129, 0.4);
@@ -1193,9 +1205,12 @@
             </div>
         </div>
         <div class="header-actions">
+            <button class="hdr-icon-btn sync-btn" onclick="forceAppUpdate()" title="Sincronizar y actualizar con GitHub al instante">
+                🔄 <span>Actualizar Web</span>
+            </button>
             <input type="file" id="excelUploadInput" accept=".xlsx, .xls" style="display:none;" onchange="processMonthlyExcel(this.files[0])">
             <button class="hdr-icon-btn excel-btn" onclick="document.getElementById('excelUploadInput').click()" title="Subir Excel mensual para actualizar datos sin perder correos">
-                ☁️ <span>Actualizar Excel</span>
+                ☁️ <span>Excel</span>
             </button>
             <button class="hdr-icon-btn" onclick="openSettingsModal()" title="Sincronización con iPad y copias de seguridad">
                 ⚙️
@@ -1364,6 +1379,17 @@
             <button class="btn-modal-close" onclick="closeEditModal()">✕</button>
         </div>
         <div class="form-layout">
+            
+            <!-- INSTANT GITHUB REFRESH -->
+            <div style="background:rgba(56,189,248,0.12); border:1px solid rgba(56,189,248,0.35); border-radius:var(--radius-md); padding:14px; text-align:center;">
+                <div style="font-size:0.9rem; font-weight:800; color:#38bdf8; margin-bottom:6px;">🔄 Sincronización Inmediata con GitHub</div>
+                <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.4; margin-bottom:12px;">
+                    ¿Has subido cambios a GitHub y el iPad no los muestra? Pulsa aquí para forzar la descarga de la última versión en 1 segundo:
+                </p>
+                <button onclick="forceAppUpdate()" class="btn-clipboard-big" style="background:#0284c7; width:100%; font-size:0.88rem;">
+                    ⚡ FORZAR DESCARGA ÚLTIMA VERSIÓN GITHUB
+                </button>
+            </div>
             <div class="form-group">
                 <label>Nombre del Establecimiento *</label>
                 <input type="text" id="inpName" placeholder="Ej: Bar Central">
