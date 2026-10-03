@@ -1,6 +1,32 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <script>
+        // CACHE-BUSTER & AUTO-PURGE FOR MOBILE PHONES & IPADS
+        (function() {
+            var CURRENT_BUILD = "2026.10.03.v2";
+            var lastBuild = localStorage.getItem("__BLIZT_BUILD_VER__");
+            
+            // Unregister legacy Service Workers that block updates
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(regs) {
+                    for (var i = 0; i < regs.length; i++) {
+                        regs[i].update();
+                    }
+                }).catch(function(){});
+            }
+
+            // Clear legacy cache storages
+            if ('caches' in window && lastBuild !== CURRENT_BUILD) {
+                caches.keys().then(function(names) {
+                    for (var i = 0; i < names.length; i++) {
+                        caches.delete(names[i]);
+                    }
+                }).catch(function(){});
+                localStorage.setItem("__BLIZT_BUILD_VER__", CURRENT_BUILD);
+            }
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
