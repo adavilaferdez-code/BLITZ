@@ -1,5 +1,5 @@
 // BLIZT PRO - SMART NETWORK-FIRST SERVICE WORKER
-const CACHE_VERSION = 'blizt-pro-v2026-10-03-auto';
+const CACHE_VERSION = 'blizt-pro-v2026-11-02-days-corrected';
 
 // Install: Activate immediately
 self.addEventListener('install', (event) => {

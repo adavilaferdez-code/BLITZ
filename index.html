@@ -4,7 +4,7 @@
     <script>
         // CACHE-BUSTER & AUTO-PURGE FOR MOBILE PHONES & IPADS
         (function() {
-            var CURRENT_BUILD = "2026.10.03.v2";
+            var CURRENT_BUILD = "2026.11.02.days_corrected";
             var lastBuild = localStorage.getItem("__BLIZT_BUILD_VER__");
             
             // Unregister legacy Service Workers that block updates
@@ -81,6 +81,146 @@
             --shadow-card: 0 4px 20px rgba(0,0,0,0.25);
             --shadow-elevated: 0 10px 30px rgba(0,0,0,0.4);
         }
+
+        /* SUN MODE / HIGH CONTRAST FOR OUTDOOR USE */
+        body.sun-mode {
+            --bg-body: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f1f5f9;
+            --bg-elevated: #ffffff;
+            --border: #cbd5e1;
+            --border-subtle: #e2e8f0;
+            --border-focus: #0284c7;
+            --text-main: #0f172a;
+            --text-muted: #334155;
+            --text-dim: #64748b;
+            --shadow-card: 0 4px 14px rgba(0,0,0,0.06);
+            --shadow-elevated: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        
+        /* NATIVE SELECT ROUTE DAY NAVIGATOR */
+        .route-day-nav-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 8px 10px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-card);
+        }
+        .nav-day-arrow-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all 0.15s ease;
+        }
+        .nav-day-arrow-btn:active {
+            transform: scale(0.92);
+            background: var(--primary);
+            color: #ffffff;
+        }
+        .route-day-select-wrap {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: rgba(2, 132, 199, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.45);
+            border-radius: var(--radius-sm);
+            padding: 0 10px;
+            height: 44px;
+            cursor: pointer;
+            min-width: 0;
+        }
+        .route-day-select-wrap:focus-within {
+            border-color: #38bdf8;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+        }
+        .route-day-native-select {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            border: none;
+            color: #38bdf8;
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            font-weight: 800;
+            cursor: pointer;
+            outline: none;
+            padding-left: 28px;
+            padding-right: 20px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        .route-day-native-select option, .route-day-native-select optgroup {
+            background: #0f131d;
+            color: #ffffff;
+            font-size: 0.9rem;
+            font-weight: normal;
+        }
+        .nav-day-icon {
+            position: absolute;
+            left: 10px;
+            font-size: 1.1rem;
+            pointer-events: none;
+        }
+        .nav-day-arrow-down {
+            position: absolute;
+            right: 12px;
+            font-size: 0.75rem;
+            color: #38bdf8;
+            pointer-events: none;
+        }
+
+        body.sun-mode .route-day-nav-bar { background: #ffffff; border-color: #cbd5e1; }
+        body.sun-mode .nav-day-arrow-btn { background: #f1f5f9; border-color: #cbd5e1; color: #0f172a; }
+        body.sun-mode .route-day-select-wrap { background: #f0f9ff; border-color: #0284c7; }
+        body.sun-mode .route-day-native-select { color: #0284c7; }
+        body.sun-mode .route-day-native-select option, body.sun-mode .route-day-native-select optgroup { background: #ffffff; color: #0f172a; }
+        body.sun-mode .nav-day-arrow-down { color: #0284c7; }
+
+        body.sun-mode .app-bg { background: #f1f5f9; }
+        body.sun-mode .app-header { background: rgba(255, 255, 255, 0.95); border-bottom-color: #cbd5e1; }
+        body.sun-mode .brand-title { color: #0f172a; }
+        body.sun-mode .nav-view-btn { background: #e2e8f0; color: #475569; }
+        body.sun-mode .nav-view-btn.active { background: #0284c7; color: #ffffff; }
+        body.sun-mode .search-bar-wrap { background: #ffffff; border-color: #94a3b8; }
+        body.sun-mode .search-input { color: #0f172a; }
+        body.sun-mode .filter-pill { background: #ffffff; color: #334155; border-color: #cbd5e1; }
+        body.sun-mode .filter-pill.active { background: #0284c7; color: #ffffff; border-color: #0284c7; }
+        body.sun-mode .client-card { background: #ffffff; border-color: #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        body.sun-mode .card-header-name { color: #0f172a; }
+        body.sun-mode .kpi-chip { background: #ffffff; border-color: #cbd5e1; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+        body.sun-mode .kpi-chip-title { color: #475569; }
+        body.sun-mode .kpi-chip-value { color: #0f172a; }
+        body.sun-mode .modal-content { background: #ffffff; color: #0f172a; border: 1px solid #cbd5e1; }
+        body.sun-mode .modal-title { color: #0f172a; }
+        body.sun-mode .dossier-card { background: #f8fafc; border-color: #cbd5e1; }
+        body.sun-mode .dossier-field-label { color: #475569; }
+        body.sun-mode .dossier-field-val { color: #0f172a; }
+        body.sun-mode .route-date-picker-bar { background: #ffffff; border-color: #cbd5e1; }
+        body.sun-mode .route-date-select { background: #f8fafc; color: #0f172a; border-color: #cbd5e1; }
+        body.sun-mode .date-quick-btn { background: #f8fafc; color: #334155; border-color: #cbd5e1; }
+        body.sun-mode .date-quick-btn.active { background: #0284c7; color: #ffffff; }
+        body.sun-mode .dashboard-section, body.sun-mode .dash-card { background: #ffffff; border-color: #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        body.sun-mode .dash-card-title { color: #0f172a; }
+        body.sun-mode .dash-chip-label { color: #475569; }
+        body.sun-mode .hdr-icon-btn { background: #e2e8f0; color: #0f172a; border-color: #cbd5e1; }
+
 
         html, body {
             height: 100%;
@@ -1648,6 +1788,9 @@
             </div>
         </div>
         <div class="header-actions">
+            <button class="hdr-icon-btn sun-btn" id="btnThemeToggle" onclick="toggleSunMode()" title="Alternar Modo Sol / Noche para exteriores">
+                ☀️ <span id="sunToggleLabel">Modo Sol</span>
+            </button>
             <button class="hdr-icon-btn sync-btn" onclick="forceAppUpdate()" title="Sincronizar y actualizar con GitHub al instante">
                 🔄 <span>Actualizar Web</span>
             </button>
@@ -1721,53 +1864,47 @@
 
     <!-- SEARCH & FILTER SECTION -->
     <div class="search-section">
-                <!-- EXACT DATE ROUTE PLANNER BAR -->
-        <div class="route-date-picker-bar">
-            <div class="route-date-header-row">
-                <span class="route-date-label">
-                    <span>📅 RUTA POR FECHA EXACTA:</span>
-                </span>
-                <select id="routeExactDateSelect" class="route-date-select" onchange="selectExactRouteDate(this.value)">
-                    <option value="all">Todas las Fechas (Ver Cartera Completa)</option>
-                    <optgroup label="Semana 1 (05 al 09 Octubre)">
-                        <option value="05/10/2026">Lunes 05/10/2026 — 17 clientes (Paradas #10 a #232)</option>
-                        <option value="06/10/2026">Martes 06/10/2026 — 18 clientes (Paradas #30 a #280)</option>
-                        <option value="07/10/2026">Miércoles 07/10/2026 — 18 clientes (Paradas #10 a #210)</option>
-                        <option value="08/10/2026">Jueves 08/10/2026 — 18 clientes (Paradas #10 a #223)</option>
-                        <option value="09/10/2026">Viernes 09/10/2026 — 18 clientes (Paradas #10 a #280)</option>
+                                        <!-- ROUTE DAY NAVIGATOR WITH REAL DROPDOWN -->
+        <div class="route-day-nav-bar">
+            <button class="nav-day-arrow-btn" id="btnPrevRouteDay" onclick="navigateRouteDay(-1)" title="Día anterior">◀</button>
+            
+            <div class="route-day-select-wrap">
+                <span class="nav-day-icon">📅</span>
+                <select id="routeDaySelect" class="route-day-native-select" onchange="onRouteDaySelectChange(this.value)">
+                    <option value="all">👥 Ver Toda la Cartera (1.104 clientes)</option>
+                    <optgroup label="Semana 1">
+                        <option value="05/10/2026" selected>Semana 1 · Lunes (05/10) — 17 clientes</option>
+                        <option value="06/10/2026">Semana 1 · Martes (06/10) — 18 clientes</option>
+                        <option value="07/10/2026">Semana 1 · Miércoles (07/10) — 18 clientes</option>
+                        <option value="08/10/2026">Semana 1 · Jueves (08/10) — 18 clientes</option>
+                        <option value="09/10/2026">Semana 1 · Viernes (09/10) — 18 clientes</option>
                     </optgroup>
-                    <optgroup label="Semana 2 (12 al 16 Octubre)">
-                        <option value="12/10/2026">Lunes 12/10/2026 — 19 clientes (Paradas #10 a #221)</option>
-                        <option value="13/10/2026">Martes 13/10/2026 — 18 clientes (Paradas #10 a #260)</option>
-                        <option value="14/10/2026">Miércoles 14/10/2026 — 18 clientes (Paradas #10 a #212)</option>
-                        <option value="15/10/2026">Jueves 15/10/2026 — 17 clientes (Paradas #70 a #240)</option>
-                        <option value="16/10/2026">Viernes 16/10/2026 — 18 clientes (Paradas #10 a #456)</option>
+                    <optgroup label="Semana 2">
+                        <option value="12/10/2026">Semana 2 · Lunes (12/10) — 19 clientes</option>
+                        <option value="13/10/2026">Semana 2 · Martes (13/10) — 18 clientes</option>
+                        <option value="14/10/2026">Semana 2 · Miércoles (14/10) — 18 clientes</option>
+                        <option value="15/10/2026">Semana 2 · Jueves (15/10) — 17 clientes</option>
+                        <option value="16/10/2026">Semana 2 · Viernes (16/10) — 18 clientes</option>
                     </optgroup>
-                    <optgroup label="Semana 3 (19 al 23 Octubre)">
-                        <option value="19/10/2026">Lunes 19/10/2026 — 17 clientes (Paradas #20 a #898)</option>
-                        <option value="20/10/2026">Martes 20/10/2026 — 17 clientes (Paradas #10 a #240)</option>
-                        <option value="21/10/2026">Miércoles 21/10/2026 — 18 clientes (Paradas #10 a #200)</option>
-                        <option value="22/10/2026">Jueves 22/10/2026 — 17 clientes (Paradas #10 a #233)</option>
-                        <option value="23/10/2026">Viernes 23/10/2026 — 18 clientes (Paradas #30 a #347)</option>
+                    <optgroup label="Semana 3">
+                        <option value="19/10/2026">Semana 3 · Lunes (19/10) — 17 clientes</option>
+                        <option value="20/10/2026">Semana 3 · Martes (20/10) — 17 clientes</option>
+                        <option value="21/10/2026">Semana 3 · Miércoles (21/10) — 18 clientes</option>
+                        <option value="22/10/2026">Semana 3 · Jueves (22/10) — 17 clientes</option>
+                        <option value="23/10/2026">Semana 3 · Viernes (23/10) — 18 clientes</option>
                     </optgroup>
-                    <optgroup label="Semana 4 (26 al 30 Octubre)">
-                        <option value="26/10/2026">Lunes 26/10/2026 — 18 clientes (Paradas #10 a #200)</option>
-                        <option value="27/10/2026">Martes 27/10/2026 — 18 clientes (Paradas #10 a #210)</option>
-                        <option value="28/10/2026">Miércoles 28/10/2026 — 17 clientes (Paradas #10 a #787)</option>
-                        <option value="29/10/2026">Jueves 29/10/2026 — 17 clientes (Paradas #30 a #578)</option>
-                        <option value="30/10/2026">Viernes 30/10/2026 — 17 clientes (Paradas #10 a #343)</option>
+                    <optgroup label="Semana 4">
+                        <option value="26/10/2026">Semana 4 · Lunes (26/10) — 18 clientes</option>
+                        <option value="27/10/2026">Semana 4 · Martes (27/10) — 18 clientes</option>
+                        <option value="28/10/2026">Semana 4 · Miércoles (28/10) — 17 clientes</option>
+                        <option value="29/10/2026">Semana 4 · Jueves (29/10) — 17 clientes</option>
+                        <option value="30/10/2026">Semana 4 · Viernes (30/10) — 17 clientes</option>
                     </optgroup>
                 </select>
+                <span class="nav-day-arrow-down">▼</span>
             </div>
-            <!-- QUICK LUNES & WEEK BUTTONS -->
-            <div class="route-date-pills-row">
-                <span style="font-size:0.75rem; font-weight:800; color:var(--text-muted); margin-right:4px;">Lunes:</span>
-                <button class="date-quick-btn" id="qBtn_05_10" onclick="selectExactRouteDate('05/10/2026')">05/10 (17)</button>
-                <button class="date-quick-btn" id="qBtn_12_10" onclick="selectExactRouteDate('12/10/2026')">12/10 (19)</button>
-                <button class="date-quick-btn" id="qBtn_19_10" onclick="selectExactRouteDate('19/10/2026')">19/10 (17)</button>
-                <button class="date-quick-btn" id="qBtn_26_10" onclick="selectExactRouteDate('26/10/2026')">26/10 (18)</button>
-                <button class="date-quick-btn active all-btn" id="qBtn_all" onclick="selectExactRouteDate('all')">Ver Todas</button>
-            </div>
+
+            <button class="nav-day-arrow-btn" id="btnNextRouteDay" onclick="navigateRouteDay(1)" title="Día siguiente">▶</button>
         </div>
         <!-- ROUTE INFO BANNER -->
         <div id="routeExactDateBanner" style="display:none;" class="date-banner-info"></div>
@@ -1777,7 +1914,7 @@
             <button class="search-clear-btn" id="btnSearchClear" onclick="clearSearchInput()">✕</button>
         </div>
         <div class="filter-scroller">
-            <button class="filter-pill active" id="pill_all" onclick="selectFilterTab('all')">Todos (1.104)</button>
+                                                                                                <button class="filter-pill active" id="pill_all" onclick="selectFilterTab('all')">Todos (1.104)</button>
             <button class="filter-pill pill-red" id="pill_riesgo" onclick="selectFilterTab('riesgo')">🔴 En Riesgo (<span id="pillCountRisk">0</span>)</button>
             <button class="filter-pill" id="pill_penalizan_baja" onclick="selectFilterTab('penalizan_baja')" style="background:rgba(127,29,29,0.6); border-color:#ef4444; color:#ffffff; font-weight:900; box-shadow:0 0 10px rgba(239,68,68,0.4);">⚠️ Bajas (<span id="pillCountPenalizan">234</span>)</button>
             <button class="filter-pill" id="pill_baja_cierre" onclick="selectFilterTab('baja_cierre')" style="background:rgba(127,29,29,0.5); border-color:#ef4444; color:#fca5a5; font-weight:900;">🏚️ Cierres (<span id="pillCountCierre">0</span>)</button>
@@ -2144,7 +2281,32 @@ function showUpdateBanner() {
     if (b) b.style.display = 'block';
 }
 
+
+function initSunMode() {
+    const isSun = localStorage.getItem('blizt_sun_mode') === 'true';
+    if (isSun) {
+        document.body.classList.add('sun-mode');
+        updateSunButtonText(true);
+    }
+}
+
+function updateSunButtonText(isSun) {
+    const btn = document.getElementById('btnThemeToggle');
+    if (btn) {
+        btn.innerHTML = isSun ? '🌙 <span>Modo Noche</span>' : '☀️ <span>Modo Sol</span>';
+        btn.title = isSun ? 'Cambiar a Modo Oscuro' : 'Cambiar a Modo Sol para exteriores';
+    }
+}
+
+function toggleSunMode() {
+    const isSun = document.body.classList.toggle('sun-mode');
+    localStorage.setItem('blizt_sun_mode', isSun ? 'true' : 'false');
+    updateSunButtonText(isSun);
+    showToast(isSun ? '☀️ Modo Sol (Exteriores) activado' : '🌙 Modo Noche activado', 'info');
+}
+
 function startApp() {
+    initSunMode();
     initAutoUpdater();
     checkStorageHealth();
     initDatabase();
@@ -2852,23 +3014,20 @@ function renderCardHTML(c) {
             </div>
         </div>
 
+        ${(hasEmail || hasPhone) ? `
         <div class="card-actions-bar" onclick="event.stopPropagation()">
             ${hasEmail ? `
                 <a href="mailto:${esc(c.email)}" class="btn-action-email" title="Enviar correo">
                     ✉️ ${esc(c.email)}
                 </a>
-                <button onclick="promptQuickEmail('${esc(c.code)}', '${esc(c.name)}', '${esc(c.email)}')" class="mini-btn" title="Modificar correo a mano">✏️</button>
                 <button onclick="deleteEmailDirect('${esc(c.code)}')" class="mini-btn del" title="Borrar correo">🗑️</button>
-                ${hasPhone ? `
-                    <a href="tel:${esc(c.phone)}" class="mini-btn" style="color:#34d399;" title="Llamar: ${esc(c.phone)}">📞</a>
-                    <a href="https://wa.me/34${cleanDigits}" target="_blank" class="mini-btn" style="color:#25d366;" title="WhatsApp">💬</a>
-                ` : ''}
-            ` : `
-                <button class="btn-action-addemail" onclick="promptQuickEmail('${esc(c.code)}', '${esc(c.name)}', '')">
-                    ✉️ Escribir a mano / Pegar Email
-                </button>
-            `}
+            ` : ''}
+            ${hasPhone ? `
+                <a href="tel:${esc(c.phone)}" class="mini-btn" style="color:#34d399;" title="Llamar: ${esc(c.phone)}">📞</a>
+                <a href="https://wa.me/34${cleanDigits}" target="_blank" class="mini-btn" style="color:#25d366;" title="WhatsApp">💬</a>
+            ` : ''}
         </div>
+        ` : ''}
     </div>`;
 }
 
@@ -2909,6 +3068,36 @@ function getFilteredList() {
         const h = getClientHealth(c);
 
         if (tab === 'all') return true;
+        if (tab === 'hoy') {
+            const todayCode = getTodayDayCode();
+            const dStr = String(c.dia_visita || '');
+            return dStr.includes('(' + todayCode + ')') || dStr.includes(todayCode);
+        }
+        if (tab === 'hoy_rutero') {
+            const todayCode = getTodayDayCode();
+            const dStr = String(c.dia_visita || '');
+            return Boolean(c.en_rutero) && (dStr.includes('(' + todayCode + ')') || dStr.includes(todayCode));
+        }
+        if (tab === 'dia_1') {
+            const dStr = String(c.dia_visita || '');
+            return dStr.includes('(1)') || dStr.includes('1') || dStr.toLowerCase().startsWith('lunes');
+        }
+        if (tab === 'dia_2') {
+            const dStr = String(c.dia_visita || '');
+            return dStr.includes('(2)') || dStr.includes('2') || dStr.toLowerCase().startsWith('martes');
+        }
+        if (tab === 'dia_3') {
+            const dStr = String(c.dia_visita || '');
+            return dStr.includes('(3)') || dStr.includes('3') || dStr.toLowerCase().startsWith('mi');
+        }
+        if (tab === 'dia_4') {
+            const dStr = String(c.dia_visita || '');
+            return dStr.includes('(4)') || dStr.includes('4') || dStr.toLowerCase().startsWith('jueves');
+        }
+        if (tab === 'dia_5') {
+            const dStr = String(c.dia_visita || '');
+            return dStr.includes('(5)') || dStr.includes('5') || dStr.toLowerCase().startsWith('viernes');
+        }
         if (tab === 'penalizan_baja') {
             const c26 = parseNum(c.cu2026);
             const b = (c.bloqueo || '').toLowerCase();
@@ -2978,27 +3167,51 @@ function getFilteredList() {
 //  ROUTE DAY PLANNER ENGINE (RUTA DE HOY & SECUENCIA)
 // =========================================================================
 
-let currentExactRouteDate = 'all'; // 'all' or exact string e.g. '05/10/2026'
+
+// =========================================================================
+
+// =========================================================================
+//  ROUTE DAYS DATA & DIRECT DROPDOWN NAVIGATION
+// =========================================================================
+
+const ROUTE_DATES = [
+    "05/10/2026", "06/10/2026", "07/10/2026", "08/10/2026", "09/10/2026",
+    "12/10/2026", "13/10/2026", "14/10/2026", "15/10/2026", "16/10/2026",
+    "19/10/2026", "20/10/2026", "21/10/2026", "22/10/2026", "23/10/2026",
+    "26/10/2026", "27/10/2026", "28/10/2026", "29/10/2026", "30/10/2026"
+];
+
+let currentExactRouteDate = '05/10/2026'; // Default to first day
+
+function onRouteDaySelectChange(val) {
+    selectExactRouteDate(val);
+}
 
 function selectExactRouteDate(dateStr) {
     currentExactRouteDate = dateStr;
 
     // Sync select dropdown
-    const sel = document.getElementById('routeExactDateSelect');
-    if (sel) sel.value = dateStr;
-
-    // Sync quick buttons
-    document.querySelectorAll('.date-quick-btn').forEach(b => b.classList.remove('active'));
-    if (dateStr === 'all') {
-        const btnAll = document.getElementById('qBtn_all');
-        if (btnAll) btnAll.classList.add('active');
-    } else {
-        const key = dateStr.slice(0, 5).replace('/', '_');
-        const btn = document.getElementById('qBtn_' + key);
-        if (btn) btn.classList.add('active');
+    const sel = document.getElementById('routeDaySelect');
+    if (sel && sel.value !== dateStr) {
+        sel.value = dateStr;
     }
 
     renderStream();
+}
+
+function navigateRouteDay(delta) {
+    let idx = ROUTE_DATES.indexOf(currentExactRouteDate);
+
+    if (idx === -1) {
+        idx = delta > 0 ? 0 : ROUTE_DATES.length - 1;
+    } else {
+        idx += delta;
+        if (idx < 0) idx = ROUTE_DATES.length - 1;
+        if (idx >= ROUTE_DATES.length) idx = 0;
+    }
+
+    const nextDate = ROUTE_DATES[idx];
+    selectExactRouteDate(nextDate);
 }
 
 function selectFilterTab(tabId) {
@@ -4040,6 +4253,7 @@ function showToast(msg, type = 'success') {
     }, 2800);
 }
 </script>
+
 
 </body>
 </html>
